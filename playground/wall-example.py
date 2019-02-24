@@ -7,7 +7,25 @@ import pygame
 import pycolor
 
 class Player(pygame.sprite.Sprite):
-    pass
+    def __init__(self, x=0, y=0):
+        super().__init__()
+
+        self.image = pygame.Surface([15, 15])
+        self.image.fill(WHITE)
+
+        # Player sprite location, and rect.
+        self.rect = self.image.get_rect()
+        self.rect.y = y
+        self.rect.x = x
+
+        # Set speed vector
+        self.change_x = 0
+        self.change_y = 0
+
+        # This is the reference shortcut for walls (or later platforms)
+        #   - collision detection is easy by sprite-group.
+        #
+        self.walls = None
 
 class Wall(pygame.sprite.Sprite):
     pass
@@ -21,6 +39,8 @@ def main():
     clock = pygame.time.Clock()
     done = False
 
+    player = Player(50,50)
+    
     while not done:
         for ev in pygame.event.get():
             if ev.type == pygame.QUIT:
