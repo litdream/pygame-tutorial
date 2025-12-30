@@ -152,11 +152,14 @@ def main():
     platform_list.add( ground1)
     ground2 = Platform(300, 40, 500, 500)
     platform_list.add( ground2)
+    wall = Platform(40, 100, 650, 400)
+    platform_list.add( wall)
 
     # Mario
     player = Mario(100, 200, platform_list)
     all_sprites.add(ground1)
     all_sprites.add(ground2)
+    all_sprites.add(wall)    
     all_sprites.add(player)
     
     running = True
