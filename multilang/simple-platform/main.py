@@ -1,6 +1,6 @@
 import pygame
 
-debug = True
+debug = False
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -9,6 +9,7 @@ clock = pygame.time.Clock()
 # Colors
 BLACK = (0,0,0)
 WHITE = (255,255,255)
+RED = (255,0,0)
 
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -21,7 +22,17 @@ def get_sprite_surface(x,y, width=sheet_width, height=sheet_height):
     _surface = pygame.Surface( (width,height), pygame.SRCALPHA)
     _surface.blit(spritesheet, (0, 0), (x, y, width, height))
     return _surface
+
+def crop_mario_surface(image, left=22, top=0, width=86, height=128):
+    """Assuming our mario sprite-image is 128x128
+    left: left-space
+    width:  128 - left - right
     
+    Returns copy of cropped surface (image).
+    """
+    crop_rect = pygame.Rect(left, top, width, height)      # 22px left space, 18px right space.
+    clip_surf = image.subsurface(crop_rect).copy()
+    return clip_surf
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self, width, height, x:int, y:int):
@@ -41,24 +52,25 @@ class Mario(pygame.sprite.Sprite):
         self.walking_frames_l = []
         self.walking_frames_r = []
         for i in range(8):
-            image = get_sprite_surface(i * 128 - 20, 0)
-            self.walking_frames_r.append(image)
-            image = pygame.transform.flip(image, True, False)
-            self.walking_frames_l.append(image)
-        _surf = get_sprite_surface(-20, 9*128)
-        self.jump_frame_r = _surf
-        self.jump_frame_l = pygame.transform.flip(_surf, True, False)
+            image = get_sprite_surface(i * 128, 0)
+            clip_surf = crop_mario_surface(image)
+            
+            self.walking_frames_r.append(clip_surf)
+            mirrored = pygame.transform.flip(clip_surf, True, False)
+            self.walking_frames_l.append(mirrored)
+            
+        _surf = get_sprite_surface(0, 9*128)
+        clip_surf = crop_mario_surface(_surf)
+        self.jump_frame_r = clip_surf
+        self.jump_frame_l = pygame.transform.flip(clip_surf, True, False)
         
         # Initialize character
         self.image = self.walking_frames_r[0]
-
-        full_rect = self.image.get_rect()
-        self.rect = full_rect.inflate(-40, 0)
-        #self.rect = self.image.get_rect()
-
+        self.rect = self.image.get_rect()
         self.rect.center = (x,y)
+        
         self.delta_y = 0
-        self.delta_x = 6
+        self.delta_x = 0
 
         self.walk_speed = 6
         self.direction = "L"
@@ -197,7 +209,8 @@ def main():
         screen.fill(BLACK)
         all_sprites.draw(screen)
         if debug:
-            pygame.draw.rect(screen, (255, 0, 0), player.rect, 2)
+            for elm in all_sprites:
+                pygame.draw.rect(screen, RED, elm.rect, 2) 
         
         pygame.display.flip()  # flip the buffer
         clock.tick(60)
