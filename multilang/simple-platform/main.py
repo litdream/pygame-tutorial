@@ -44,8 +44,8 @@ class Mario(pygame.sprite.Sprite):
             image = pygame.transform.flip(image, True, False)
             self.walking_frames_l.append(image)
         _surf = get_sprite_surface(0, 9*128)
-        self.jump_frame_l = _surf
-        self.jump_frame_r = pygame.transform.flip(_surf, True, False)
+        self.jump_frame_r = _surf
+        self.jump_frame_l = pygame.transform.flip(_surf, True, False)
         
         # Initialize character
         self.image = self.walking_frames_r[0]
