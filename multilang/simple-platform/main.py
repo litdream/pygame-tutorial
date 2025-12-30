@@ -1,5 +1,7 @@
 import pygame
 
+debug = True
+
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 clock = pygame.time.Clock()
@@ -39,19 +41,22 @@ class Mario(pygame.sprite.Sprite):
         self.walking_frames_l = []
         self.walking_frames_r = []
         for i in range(8):
-            image = get_sprite_surface(i * 128, 0)
+            image = get_sprite_surface(i * 128 - 20, 0)
             self.walking_frames_r.append(image)
             image = pygame.transform.flip(image, True, False)
             self.walking_frames_l.append(image)
-        _surf = get_sprite_surface(0, 9*128)
+        _surf = get_sprite_surface(-20, 9*128)
         self.jump_frame_r = _surf
         self.jump_frame_l = pygame.transform.flip(_surf, True, False)
         
         # Initialize character
         self.image = self.walking_frames_r[0]
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+
+        full_rect = self.image.get_rect()
+        self.rect = full_rect.inflate(-40, 0)
+        #self.rect = self.image.get_rect()
+
+        self.rect.center = (x,y)
         self.delta_y = 0
         self.delta_x = 6
 
@@ -191,6 +196,8 @@ def main():
         # Draw
         screen.fill(BLACK)
         all_sprites.draw(screen)
+        if debug:
+            pygame.draw.rect(screen, (255, 0, 0), player.rect, 2)
         
         pygame.display.flip()  # flip the buffer
         clock.tick(60)
