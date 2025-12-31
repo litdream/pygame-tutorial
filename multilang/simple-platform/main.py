@@ -16,6 +16,8 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Simple Platformer")
 
 spritesheet = pygame.image.load("simple-platform/char_paper.png").convert_alpha()
+#  - From:  https://spelunky.fyi/mods/m/modern-paper-mario/
+
 sheet_width = 128
 sheet_height = 128
 def get_sprite_surface(x,y, width=sheet_width, height=sheet_height):
