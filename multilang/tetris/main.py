@@ -17,16 +17,28 @@ COLORS = {
 CELL_SIZE = 40
 STAGE_WIDTH = 10
 STAGE_HEIGHT = 20
-SCREEN_WIDTH = CELL_SIZE * STAGE_WIDTH
+SIDEBAR_WIDTH = 5  # Width of the sidebar in cells
+SCREEN_WIDTH = CELL_SIZE * (STAGE_WIDTH + SIDEBAR_WIDTH)
 SCREEN_HEIGHT = CELL_SIZE * STAGE_HEIGHT
 
 # --- functions ---
 
 def draw_grid(screen, stage):
+    # Draw grid for the main stage area only
     for y in range(stage.height):
         for x in range(stage.width):
             rect = pygame.Rect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
             pygame.draw.rect(screen, GRAY, rect, 1)
+
+def draw_sidebar(screen):
+    # Draw a line to separate the stage from the sidebar
+    sidebar_x = STAGE_WIDTH * CELL_SIZE
+    pygame.draw.line(screen, WHITE, (sidebar_x, 0), (sidebar_x, SCREEN_HEIGHT), 2)
+    
+    # Display "Next" text
+    font = pygame.font.Font(None, 36)
+    text = font.render("Next", True, WHITE)
+    screen.blit(text, (sidebar_x + 30, 20))
 
 def draw_stage(screen, stage):
     for y in range(stage.height):
@@ -129,6 +141,9 @@ def main():
         draw_stage(screen, game.stage)
         draw_block(screen, game.current_block, game.block_x, game.block_y)
         draw_grid(screen, game.stage)
+        draw_sidebar(screen)
+        # Draw the next block in the sidebar
+        draw_block(screen, game.next_block, STAGE_WIDTH + 1, 2)
 
         pygame.display.flip()
 
