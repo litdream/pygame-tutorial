@@ -13,6 +13,14 @@ EXTRA.  uv
     - Before this, what is standard library, and 3rd party library?
 
 
+10. Keyboard
+  - [move with keyboard](keyboard-test.py)
+
+
+11. Class
+  - [Make this a class](class-game.py)
+
+
 13. Sprites
 
 Definition:  "A Sprite is an object that contains a Surface (the image) and a Rect (the position and size)."
@@ -43,8 +51,6 @@ all_sprites.draw(screen)    # MAGIC: Draws every sprite's 'image' at its 'rect' 
 pygame.display.flip()
 
 ```
-
-
 
 
 
