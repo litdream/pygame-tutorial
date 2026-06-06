@@ -1,5 +1,6 @@
 import pygame
 import os
+import random
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
@@ -18,12 +19,103 @@ COLORS = {
     "red": (255, 0, 0),
 }
 
-
 CELL_SIZE = 40
 STAGE_WIDTH = 10
 STAGE_HEIGHT = 20
 SCREEN_WIDTH = CELL_SIZE * STAGE_WIDTH
 SCREEN_HEIGHT = CELL_SIZE * STAGE_HEIGHT
+
+
+
+# Game setup
+
+SHAPES = {
+    'I': [
+        [[0,1,0,0],
+         [0,1,0,0],
+         [0,1,0,0],
+         [0,1,0,0]],
+        
+        [[0,0,0,0],
+         [1,1,1,1],
+         [0,0,0,0],
+         [0,0,0,0]]
+    ],
+    'O': [
+        [[1,1],
+         [1,1]]
+    ],
+    'T': [
+        [[0,1,0],
+         [1,1,1],
+         [0,0,0]],
+        
+        [[0,1,0],
+         [0,1,1],
+         [0,1,0]],
+        
+        [[0,0,0],
+         [1,1,1],
+         [0,1,0]],
+        
+        [[0,1,0],
+         [1,1,0],
+         [0,1,0]]
+    ],
+    'J': [
+        [[1,0,0],
+         [1,1,1],
+         [0,0,0]],
+
+        [[0,1,1],
+         [0,1,0],
+         [0,1,0]],
+
+        [[0,0,0],
+         [1,1,1],
+         [0,0,1]],
+
+        [[0,1,0],
+         [0,1,0],
+         [1,1,0]]
+
+    ],
+    'L': [
+        [[0,0,1],
+         [1,1,1],
+         [0,0,0]],
+
+        [[0,1,0],
+         [0,1,0],
+         [0,1,1]],
+
+        [[0,0,0],
+         [1,1,1],
+         [1,0,0]],
+
+        [[1,1,0],
+         [0,1,0],
+         [0,1,0]]
+    ],
+    'S': [
+        [[0,1,1],
+         [1,1,0],
+         [0,0,0]],
+
+        [[0,1,0],
+         [0,1,1],
+         [0,0,1]]        
+    ],
+    'Z': [
+        [[1,1,0],
+         [0,1,1],
+         [0,0,0]],
+
+        [[0,0,1],
+         [0,1,1],
+         [0,1,0]]
+    ],
+}
 
 
 def main():
@@ -36,8 +128,16 @@ def main():
     clock = pygame.time.Clock()
 
     running = True
+    block_types = list("IOTJLSZ")
+
+    # initial    
+    curblk_type = random.choice(block_types)      
+    curblk_lst = SHAPES[curblk_type]
+    curblk_idx = 0
+
     while running:
         screen.fill(BLACK)
+        
 
         delta_time = clock.tick(60)
         current_time = pygame.time.get_ticks()  # Get time in millis.
