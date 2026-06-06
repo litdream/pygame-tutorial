@@ -1,6 +1,8 @@
 import pygame
 import os
 import random
+from copy import deepcopy
+
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
@@ -35,7 +37,7 @@ SHAPES = {
          [0,1,0,0],
          [0,1,0,0],
          [0,1,0,0]],
-        
+
         [[0,0,0,0],
          [1,1,1,1],
          [0,0,0,0],
@@ -49,15 +51,15 @@ SHAPES = {
         [[0,1,0],
          [1,1,1],
          [0,0,0]],
-        
+
         [[0,1,0],
          [0,1,1],
          [0,1,0]],
-        
+
         [[0,0,0],
          [1,1,1],
          [0,1,0]],
-        
+
         [[0,1,0],
          [1,1,0],
          [0,1,0]]
@@ -104,7 +106,7 @@ SHAPES = {
 
         [[0,1,0],
          [0,1,1],
-         [0,0,1]]        
+         [0,0,1]]
     ],
     'Z': [
         [[1,1,0],
@@ -116,6 +118,36 @@ SHAPES = {
          [0,1,0]]
     ],
 }
+
+def get_stage():
+    rtn = [
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1]
+    ]
+    return rtn
+
+def can_block_apply(stage, block, block_idx, block_left_x, block_left_y) -> bool:
+    stg = deepcopy(stage)
+    # TODO:  implement this.  going upstairs with Justin
 
 
 def main():
@@ -130,14 +162,14 @@ def main():
     running = True
     block_types = list("IOTJLSZ")
 
-    # initial    
-    curblk_type = random.choice(block_types)      
+    # initial
+    curblk_type = random.choice(block_types)
     curblk_lst = SHAPES[curblk_type]
     curblk_idx = 0
+    stage = get_stage()
 
     while running:
         screen.fill(BLACK)
-        
 
         delta_time = clock.tick(60)
         current_time = pygame.time.get_ticks()  # Get time in millis.
@@ -154,7 +186,7 @@ def main():
         # DRAW BLOCKS
         pygame.display.flip()
     pygame.display.flip()
-        
+
 
 if __name__ == '__main__':
     main()
