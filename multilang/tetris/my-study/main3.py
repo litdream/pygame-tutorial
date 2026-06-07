@@ -166,7 +166,14 @@ def new_block():
     curblk_shape = curblk_lst_shape[curblk_index]
     blk_x, blk_y = 5, 0
     return curblk_lst_shape, curblk_shape, blk_x, blk_y
-    
+
+def collapse_stage(stage) -> bool:
+    for idx, row in enumerate(stage):
+        if 0 not in row and row != [1,1,1,1,1,1,1,1,1,1,1,1]:
+            stage.pop(idx)
+            stage.insert(0, [1,0,0,0,0,0,0,0,0,0,0,1])
+            return True
+    return False
 
 def main():
     pygame.init()
@@ -205,7 +212,7 @@ def main():
                         running = False
                 if event.key == pygame.K_UP:    # Up: rotate
                     next_index = curblk_index
-                    next_index += 1
+                    next_index -= 1
                     next_index %= len(curblk_lst_shape)
                     next_shape = curblk_lst_shape[ next_index ]
                     if applicable(stage, next_shape, (blk_x, blk_y)):
@@ -222,7 +229,10 @@ def main():
                 if event.key == pygame.K_RIGHT:   # right
                     if applicable(stage, curblk_shape, (blk_x+1, blk_y)):                    
                         blk_x += 1
-        
+
+                if event.key == pygame.K_SPACE:
+                    while applicable(stage, curblk_shape, (blk_x, blk_y+1)):
+                        blk_y +=1
         # DRAW Block
         for dy, row in enumerate(curblk_shape):
             for dx, cell in enumerate(row):
@@ -259,6 +269,12 @@ def main():
             #  - TODO: refactor:  copied from above
             curblk_lst_shape, curblk_shape, blk_x, blk_y  = new_block()
             curblk_index = 0
+
+        while True:
+            if not collapse_stage(stage):
+                break
+            
+        
                         
 
 if __name__  == '__main__':
