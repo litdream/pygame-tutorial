@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "pygame>=2.6.1",
+    "pygments>=2.19.2",
     "pytest>=9.0.2",
 ]
 
