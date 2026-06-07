@@ -2,6 +2,7 @@ import pygame
 import os
 import random
 from copy import deepcopy
+import pytest
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
@@ -10,6 +11,7 @@ WHITE = (255, 255, 255)
 GRAY = (128, 128, 128)
 
 COLORS = [
+    BLACK,
     GRAY,         # GRAY:  reserved for blank.
     (0, 255, 255),     # cyan
     (255, 255, 0),    # yellow
@@ -30,89 +32,89 @@ SCREEN_HEIGHT = CELL_SIZE * ( STAGE_HEIGHT + 1 )
 # Game setup
 SHAPES = {
     'I': [
-        [[0,1,0,0],
-         [0,1,0,0],
-         [0,1,0,0],
-         [0,1,0,0]],
+        [[0,2,0,0],
+         [0,2,0,0],
+         [0,2,0,0],
+         [0,2,0,0]],
 
         [[0,0,0,0],
-         [1,1,1,1],
+         [2,2,2,2],
          [0,0,0,0],
          [0,0,0,0]]
     ],
     'O': [
-        [[2,2],
-         [2,2]]
+        [[3,3],
+         [3,3]]
     ],
     'T': [
-        [[0,3,0],
-         [3,3,3],
-         [0,0,0]],
-
-        [[0,3,0],
-         [0,3,3],
-         [0,3,0]],
-
-        [[0,0,0],
-         [3,3,3],
-         [0,3,0]],
-
-        [[0,3,0],
-         [3,3,0],
-         [0,3,0]]
-    ],
-    'J': [
-        [[4,0,0],
+        [[0,4,0],
          [4,4,4],
          [0,0,0]],
 
-        [[0,4,4],
-         [0,4,0],
+        [[0,4,0],
+         [0,4,4],
          [0,4,0]],
 
         [[0,0,0],
          [4,4,4],
-         [0,0,4]],
+         [0,4,0]],
 
         [[0,4,0],
-         [0,4,0],
-         [4,4,0]]
-
+         [4,4,0],
+         [0,4,0]]
     ],
-    'L': [
-        [[0,0,5],
+    'J': [
+        [[5,0,0],
          [5,5,5],
          [0,0,0]],
 
-        [[0,5,0],
+        [[0,5,5],
          [0,5,0],
-         [0,5,5]],
+         [0,5,0]],
 
         [[0,0,0],
          [5,5,5],
-         [5,0,0]],
+         [0,0,5]],
 
-        [[5,5,0],
+        [[0,5,0],
          [0,5,0],
-         [0,5,0]]
+         [5,5,0]]
+
     ],
-    'S': [
-        [[0,6,6],
-         [6,6,0],
+    'L': [
+        [[0,0,6],
+         [6,6,6],
          [0,0,0]],
 
         [[0,6,0],
-         [0,6,6],
-         [0,0,6]]
+         [0,6,0],
+         [0,6,6]],
+
+        [[0,0,0],
+         [6,6,6],
+         [6,0,0]],
+
+        [[6,6,0],
+         [0,6,0],
+         [0,6,0]]
     ],
-    'Z': [
-        [[7,7,0],
-         [0,7,7],
+    'S': [
+        [[0,7,7],
+         [7,7,0],
          [0,0,0]],
 
-        [[0,0,7],
+        [[0,7,0],
          [0,7,7],
-         [0,7,0]]
+         [0,0,7]]
+    ],
+    'Z': [
+        [[8,8,0],
+         [0,8,8],
+         [0,0,0]],
+
+        [[0,0,8],
+         [0,8,8],
+         [0,8,0]]
     ],
 }
 
@@ -143,6 +145,28 @@ def create_empty_stage():
     ]
     return rtn
 
+def applicable(stage, curblk_shape, block_location) -> bool:
+    """
+    return false if block's current position collides with wall, or existing blocks.
+    otherwise returns true
+    """
+    (bx, by) = block_location
+    x, y = bx, by
+    for dy, row in enumerate(curblk_shape):
+        for dx, cell in enumerate(row):
+            if cell != 0 and stage[y+dy][x+dx] != 0:
+                return False
+    return True
+
+def new_block():
+    curblk_type = random.choice( list(SHAPES.keys()) )
+    curblk_lst_shape = SHAPES[ curblk_type ]
+
+    curblk_index = 0
+    curblk_shape = curblk_lst_shape[curblk_index]
+    blk_x, blk_y = 5, 0
+    return curblk_lst_shape, curblk_shape, blk_x, blk_y
+    
 
 def main():
     pygame.init()
@@ -161,18 +185,14 @@ def main():
 
     # Initial condition
     falling_speed = 500   # 0.5sec
-    curblk_type = random.choice( list(SHAPES.keys()) )
-    curblk_lst_shape = SHAPES[ curblk_type ]
-
+    curblk_lst_shape, curblk_shape, blk_x, blk_y  = new_block()
     curblk_index = 0
-    curblk_shape = curblk_lst_shape[curblk_index]
-    blk_x, blk_y = 5, 0
     
     while running:
         screen.fill(BLACK)
         current_time = pygame.time.get_ticks()   # get current time in millis
 
-        print(last_update_time,  current_time)
+        #print(last_update_time,  current_time)
         
         delta_time = clock.tick(fps)
         for event in pygame.event.get():
@@ -183,6 +203,25 @@ def main():
                 if event.key == pygame.K_x:     # CTRL-X:  quit game.
                     if event.mod & pygame.KMOD_CTRL:
                         running = False
+                if event.key == pygame.K_UP:    # Up: rotate
+                    next_index = curblk_index
+                    next_index += 1
+                    next_index %= len(curblk_lst_shape)
+                    next_shape = curblk_lst_shape[ next_index ]
+                    if applicable(stage, next_shape, (blk_x, blk_y)):
+                        curblk_index += 1
+                        curblk_index %= len(curblk_lst_shape)
+
+                        #print(curblk_index, len(curblk_lst_shape))
+                        curblk_shape = curblk_lst_shape[ curblk_index ]
+
+                if event.key == pygame.K_LEFT:   # left
+                    if applicable(stage, curblk_shape, (blk_x-1, blk_y)):
+                        blk_x -= 1
+                        
+                if event.key == pygame.K_RIGHT:   # right
+                    if applicable(stage, curblk_shape, (blk_x+1, blk_y)):                    
+                        blk_x += 1
         
         # DRAW Block
         for dy, row in enumerate(curblk_shape):
@@ -198,7 +237,7 @@ def main():
             for dx, cell in enumerate(row):
                 if cell !=0 :
                     rect = pygame.Rect( dx*CELL_SIZE, dy*CELL_SIZE, CELL_SIZE, CELL_SIZE )
-                    pygame.draw.rect(screen, GRAY, rect)
+                    pygame.draw.rect(screen, COLORS[cell], rect)
                     
         pygame.display.flip()                    
 
@@ -206,6 +245,21 @@ def main():
         if current_time - last_update_time > falling_speed:
             blk_y += 1
             last_update_time = current_time
+
+        # Check if we have to re-generate block.
+        if not applicable(stage, curblk_shape, (blk_x, blk_y +1)):
+            for dy, row in enumerate(curblk_shape):
+                for dx, cell in enumerate(row):
+                    #print(cell)
+                    if cell != 0:
+                        # Copy block into the stage.
+                        stage[blk_y + dy][blk_x + dx] = cell
+                        
+            # Regenerate block
+            #  - TODO: refactor:  copied from above
+            curblk_lst_shape, curblk_shape, blk_x, blk_y  = new_block()
+            curblk_index = 0
+                        
 
 if __name__  == '__main__':
     main()
