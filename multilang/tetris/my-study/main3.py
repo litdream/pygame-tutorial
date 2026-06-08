@@ -246,7 +246,10 @@ def main():
         for dy, row in enumerate(stage):
             for dx, cell in enumerate(row):
                 if cell !=0 :
-                    rect = pygame.Rect( dx*CELL_SIZE, dy*CELL_SIZE, CELL_SIZE, CELL_SIZE )
+                    border = pygame.Rect( dx*CELL_SIZE, dy*CELL_SIZE, CELL_SIZE, CELL_SIZE )
+                    pygame.draw.rect(screen, GRAY, border)
+                    
+                    rect = pygame.Rect( dx*CELL_SIZE+1, dy*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 )
                     pygame.draw.rect(screen, COLORS[cell], rect)
                     
         pygame.display.flip()                    
