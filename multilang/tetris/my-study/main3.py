@@ -6,6 +6,8 @@ import pytest
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
+DEBUG=False
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (128, 128, 128)
@@ -169,11 +171,14 @@ def new_block():
 
 def collapse_stage(stage) -> bool:
     for idx, row in enumerate(stage):
-        if 0 not in row and row != [1,1,1,1,1,1,1,1,1,1,1,1]:
+        if ( 0 not in row ) and ( row != [1,1,1,1,1,1,1,1,1,1,1,1] ):
             stage.pop(idx)
             stage.insert(0, [1,0,0,0,0,0,0,0,0,0,0,1])
             return True
     return False
+
+
+DEBUG_LOG = "/tmp/tetris-trace.log"
 
 def main():
     pygame.init()
@@ -231,8 +236,14 @@ def main():
                         blk_x += 1
 
                 if event.key == pygame.K_SPACE:
+                    if DEBUG:
+                        with open(DEBUG_LOG, "a") as fh:
+                            fh.write(f"{stage}\n\n{curblk_shape}\n")
+                            fh.write("-----------------------------------\n")
+                        
                     while applicable(stage, curblk_shape, (blk_x, blk_y+1)):
                         blk_y +=1
+                        
         # DRAW Block
         for dy, row in enumerate(curblk_shape):
             for dx, cell in enumerate(row):
